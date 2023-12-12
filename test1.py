@@ -190,14 +190,16 @@ def generate_reports(report, policies, claims, customers):
         report.generate_customers_statistics(customers)
     else:
         print("Opção inválida. Tente novamente.")
+        
+
 
 def user_interface():
-    customers = []  # Lista para armazenar vários clientes
-    policies = []   # Lista para armazenar várias apólices
-    claims = []     # Lista para armazenar reclamações
-    risk_evaluations = []  # Lista para armazenar avaliações de risco associadas a cada apólice
-    agents = []     # Lista para armazenar agentes de seguros
-    report = Report()  # Instância da classe Report
+    customers = []  
+    policies = []   
+    claims = []     
+    risk_evaluations = []  
+    agents = []     
+    report = Report()  
 
     while True:
         print("\n1. Criar um cliente")
@@ -215,6 +217,8 @@ def user_interface():
         print("13. Gerar Relatórios")
         print("14. Gerenciar Agentes")
         print("15. Sair")
+        print("16. Portal de Atendimento ao Cliente")  
+
         choice = input("Escolha uma opção: ")
 
         if choice == '1':
@@ -354,8 +358,58 @@ def user_interface():
         elif choice == '15':
             print("Saindo do sistema. Até logo!")
             break
+        elif choice == '16':
+            customer_email = input("Digite seu e-mail: ")
+            authenticated_customer = authenticate_customer(customers, customer_email)
+            if authenticated_customer:
+                customer_portal(authenticated_customer, policies, claims)
+            else:
+                print("E-mail não encontrado. Verifique seu e-mail e tente novamente.")
         else:
             print("Opção inválida. Tente novamente.")
+            
+def authenticate_customer(customers, email):
+    normalized_email = email.lower()  # Converte o e-mail para minúsculas
+    for customer in customers:
+        if customer.email.lower() == normalized_email:
+            return customer
+    return None
+
+def customer_portal(customer, policies, claims):
+    while True:
+        print("\nPortal de Atendimento ao Cliente:")
+        print("1. Visualizar Minhas Apólices")
+        print("2. Visualizar Minhas Reclamações")
+        print("3. Voltar ao Menu Principal")
+
+        choice = input("Escolha uma opção: ")
+
+        if choice == '1':
+            view_customer_policies(customer)
+        elif choice == '2':
+            view_customer_claims(customer, claims)
+        elif choice == '3':
+            print("Retornando ao Menu Principal.")
+            break
+        else:
+            print("Opção inválida. Tente novamente.")
+
+def view_customer_policies(customer):
+    if not customer.policy_info:
+        print("Você não tem apólices cadastradas.")
+    else:
+        print("Suas Apólices:")
+        for policy_number, policy_details in customer.policy_info.items():
+            print(f"Apólice {policy_number}: {policy_details}")
+
+def view_customer_claims(customer, claims):
+    customer_claims = [claim for claim in claims if claim.policy.customer == customer]
+    if not customer_claims:
+        print("Você não tem reclamações registradas.")
+    else:
+        print("Suas Reclamações:")
+        for claim in customer_claims:
+            print(f"Data de Vencimento: {claim.policy.payment_due_date.strftime('%Y-%m-%d')}, Descrição: {claim.description}, Aprovada: {claim.is_approved}")
 
 def manage_agents(agents, customers):
     while True:
