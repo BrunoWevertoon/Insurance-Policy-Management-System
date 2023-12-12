@@ -222,8 +222,12 @@ def user_interface():
             print("Cliente criado com sucesso.")
         elif choice == '2':
             if not customers:
-                print("Primeiro, você precisa criar um cliente.")
+                print("Não há clientes disponíveis. Por favor, crie um cliente primeiro.")
                 continue
+            
+            print("\nEscolha o cliente para atualizar informações pessoais:")
+            for i, customer in enumerate(customers):
+                print(f"{i + 0}. {customer.name}")
             customer_index = int(input("Digite o índice do cliente que deseja atualizar: "))
             if 0 <= customer_index < len(customers):
                 name = input("Digite o novo nome do cliente: ")
@@ -234,8 +238,12 @@ def user_interface():
                 print("Índice de cliente inválido.")
         elif choice == '3':
             if not customers:
-                print("Primeiro, você precisa criar um cliente.")
+                print("Não há clientes disponíveis. Por favor, crie um cliente primeiro.")
                 continue
+            
+            print("\nEscolha o cliente para visualizar informações pessoais:")
+            for i, customer in enumerate(customers):
+                print(f"{i + 0}. {customer.name}")
             customer_index = int(input("Digite o índice do cliente que deseja visualizar: "))
             if 0 <= customer_index < len(customers):
                 print(f"Nome: {customers[customer_index].name}")
@@ -391,4 +399,3 @@ def view_assigned_customers(agents):
 
 # Executando a interface do usuário
 user_interface()
-
