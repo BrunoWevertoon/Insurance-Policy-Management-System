@@ -33,6 +33,7 @@ class Policy:
         self.premium = premium
         self.is_claimed = False
         self.payment_due_date = datetime.datetime.now() + datetime.timedelta(days=30)
+        self.risk_evaluation = None
 
     def file_claim(self):
         self.is_claimed = True
@@ -65,6 +66,10 @@ class Policy:
         if datetime.datetime.now() > self.payment_due_date and self.premium > 0:
             print(f"Lembrete: O pagamento do prêmio de {self.premium} está vencido.")
 
+    def avaliar_risco(self):
+        fator_arbitrario = 0.1
+        self.risk_evaluation = self.coverage_amount * fator_arbitrario / self.premium
+
 class Claim:
     def __init__(self, policy, description):
         self.policy = policy
@@ -82,9 +87,52 @@ class Claim:
         self.approve_claim()
         print("Sinistro processado e aprovado.")
 
+class Report:
+    def __init__(self):
+        self.claims_report = []
+        self.payments_report = []
+        self.customers_statistics = []
+
+    def generate_claims_report(self, claims):
+        report_data = []
+        for claim in claims:
+            report_data.append({
+                'policy_number': claim.policy.policy_number,
+                'customer': claim.policy.customer.name if claim.policy.customer else "Cliente não associado",
+                'description': claim.description,
+                'date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            })
+        return report_data
+
+    def generate_payments_report(self, policies):
+        report_data = []
+        for policy in policies:
+            if policy.premium < policy.coverage_amount:
+                report_data.append({
+                    'policy_number': policy.policy_number,
+                    'customer': policy.customer.name if policy.customer else "Cliente não associado",
+                    'amount_paid': policy.premium,
+                    'date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                })
+        return report_data
+
+    def generate_customers_statistics(self, customers):
+        report_data = []
+        for customer in customers:
+            policies_count = len(customer.policy_info)
+            report_data.append({
+                'customer_name': customer.name,
+                'email': customer.email,
+                'policies_count': policies_count,
+            })
+        return report_data
+
 def user_interface():
     customers = []  # Lista para armazenar vários clientes
     policies = []   # Lista para armazenar várias apólices
+    claims = []     # Lista para armazenar reclamações
+    risk_evaluations = []  # Lista para armazenar avaliações de risco associadas a cada apólice
+    report = Report()  # Instância da classe Report
 
     while True:
         print("\n1. Criar um cliente")
@@ -98,7 +146,9 @@ def user_interface():
         print("9. Registrar e processar uma reclamação")
         print("10. Processar pagamento")
         print("11. Enviar lembrete de pagamento")
-        print("12. Sair")
+        print("12. Avaliar risco da apólice")
+        print("13. Gerar Relatórios")
+        print("14. Sair")
         choice = input("Escolha uma opção: ")
 
         if choice == '1':
@@ -135,6 +185,7 @@ def user_interface():
             premium = float(input("Digite o prêmio: "))
             policy = Policy.create_policy(policy_number, None, coverage_amount, premium)
             policies.append(policy)
+            risk_evaluations.append(None)  # Inicialmente, a avaliação de risco é None
             print("Apólice criada com sucesso.")
         elif choice == '5':
             if not customers or not policies:
@@ -164,7 +215,8 @@ def user_interface():
                 continue
             policy_index = int(input("Digite o índice da apólice que deseja ver os detalhes: "))
             if 0 <= policy_index < len(policies):
-                print(policies[policy_index].view_policy_details())
+                policy_details = policies[policy_index].view_policy_details()
+                print(policy_details)
             else:
                 print("Índice de apólice inválido.")
         elif choice == '8':
@@ -187,8 +239,10 @@ def user_interface():
                 description = input("Digite a descrição da reclamação: ")
                 claim = Claim(policy=policies[policy_index], description=description)
                 claim.process_claim()
+                claims.append(claim)
             else:
                 print("Índice de apólice inválido.")
+        
         elif choice == '10':
             if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
@@ -209,9 +263,42 @@ def user_interface():
             else:
                 print("Índice de apólice inválido.")
         elif choice == '12':
-            break
-        else:
-            print("Opção inválida. Tente novamente.")
-
-# Executando a interface do usuário
+            if not policies:
+                print("Primeiro, você precisa criar uma apólice.")
+                continue
+            policy_index = int(input("Digite o índice da apólice para visualizar a avaliação de risco: "))
+            if 0 <= policy_index < len(risk_evaluations):
+                if risk_evaluations[policy_index] is None:
+                    policies[policy_index].avaliar_risco()
+                    risk_evaluations[policy_index] = policies[policy_index].risk_evaluation
+                print(f"Avaliação de risco: {risk_evaluations[policy_index]}")
+            else:
+                 print("Índice de apólice inválido.")
+        elif choice == '13':
+            if not policies:
+                print("Primeiro, você precisa criar uma apólice.")
+                continue
+            print("\nEscolha o tipo de relatório:")
+            print("1. Relatório de Sinistros")
+            print("2. Relatório de Pagamentos")
+            print("3. Estatísticas de Clientes")
+            report_choice = input("Digite o número correspondente à opção desejada: ")
+            if report_choice == '1':
+                claims_report_data = report.generate_claims_report(claims)
+                for entry in claims_report_data:
+                    print(entry)
+            elif report_choice == '2':
+                payments_report_data = report.generate_payments_report(policies)
+                for entry in payments_report_data:
+                    print(entry)
+            elif report_choice == '3':
+                customers_statistics_data = report.generate_customers_statistics(customers)
+                for entry in customers_statistics_data:
+                    print(entry)
+            else:
+                print("Opção de relatório inválida. Tente novamente.")
+            
+            
+            # Executando a interface do usuário
 user_interface()
+    
