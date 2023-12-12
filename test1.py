@@ -7,16 +7,22 @@ class Customer:
         self.personal_info = personal_info if personal_info else {}
         self.policy_info = {}
 
-    def update_personal_info(self, info):
-        self.personal_info.update(info)
+    def update_personal_info(self, name, email):
+        self.name = name
+        self.email = email
 
     def view_personal_info(self):
-        return self.personal_info
+        return {
+            'name': self.name,
+            'email': self.email
+        }
 
     def add_policy(self, policy):
         self.policy_info[policy.policy_number] = policy.view_policy_details()
 
     def view_policy_info(self):
+        if not self.policy_info:
+            return "Este cliente não tem apólices cadastradas."
         return self.policy_info
 
 class Policy:
@@ -26,7 +32,7 @@ class Policy:
         self.coverage_amount = coverage_amount
         self.premium = premium
         self.is_claimed = False
-        self.payment_due_date = datetime.datetime.now() + datetime.timedelta(days=30)  # Definindo a data de vencimento do pagamento para 30 dias a partir de agora
+        self.payment_due_date = datetime.datetime.now() + datetime.timedelta(days=30)
 
     def file_claim(self):
         self.is_claimed = True
@@ -36,9 +42,10 @@ class Policy:
         return cls(policy_number, customer, coverage_amount, premium)
 
     def view_policy_details(self):
+        customer_name = self.customer.name if self.customer else "Cliente não associado"
         return {
             'policy_number': self.policy_number,
-            'customer': self.customer.name,
+            'customer': customer_name,
             'coverage_amount': self.coverage_amount,
             'premium': self.premium,
             'is_claimed': self.is_claimed
@@ -76,8 +83,9 @@ class Claim:
         print("Sinistro processado e aprovado.")
 
 def user_interface():
-    cliente1 = None
-    apolice1 = None
+    customers = []  # Lista para armazenar vários clientes
+    policies = []   # Lista para armazenar várias apólices
+
     while True:
         print("\n1. Criar um cliente")
         print("2. Atualizar informações pessoais do cliente")
@@ -96,70 +104,110 @@ def user_interface():
         if choice == '1':
             name = input("Digite o nome do cliente: ")
             email = input("Digite o email do cliente: ")
-            info = input("Digite as informações pessoais no formato 'chave:valor' separadas por vírgulas: ")
-            info = dict(item.split(":") for item in info.split(","))
-            cliente1 = Customer(name=name, email=email, personal_info=info)
+            customer = Customer(name=name, email=email)
+            customers.append(customer)
             print("Cliente criado com sucesso.")
         elif choice == '2':
-            if cliente1 is None:
+            if not customers:
                 print("Primeiro, você precisa criar um cliente.")
                 continue
-            info = input("Digite as informações pessoais no formato 'chave:valor' separadas por vírgulas: ")
-            info = dict(item.split(":") for item in info.split(","))
-            cliente1.update_personal_info(info)
+            customer_index = int(input("Digite o índice do cliente que deseja atualizar: "))
+            if 0 <= customer_index < len(customers):
+                name = input("Digite o novo nome do cliente: ")
+                email = input("Digite o novo email do cliente: ")
+                customers[customer_index].update_personal_info(name, email)
+                print("Informações pessoais atualizadas com sucesso.")
+            else:
+                print("Índice de cliente inválido.")
         elif choice == '3':
-            if cliente1 is None:
+            if not customers:
                 print("Primeiro, você precisa criar um cliente.")
                 continue
-            print(cliente1.view_personal_info())
+            customer_index = int(input("Digite o índice do cliente que deseja visualizar: "))
+            if 0 <= customer_index < len(customers):
+                print(f"Nome: {customers[customer_index].name}")
+                print(f"Email: {customers[customer_index].email}")
+            else:
+                print("Índice de cliente inválido.")
         elif choice == '4':
-            if cliente1 is None:
-                print("Primeiro, você precisa criar um cliente.")
-                continue
             policy_number = input("Digite o número da apólice: ")
             coverage_amount = float(input("Digite a quantidade de cobertura: "))
             premium = float(input("Digite o prêmio: "))
-            apolice1 = Policy.create_policy(policy_number, cliente1, coverage_amount, premium)
+            policy = Policy.create_policy(policy_number, None, coverage_amount, premium)
+            policies.append(policy)
             print("Apólice criada com sucesso.")
         elif choice == '5':
-            if cliente1 is None or apolice1 is None:
+            if not customers or not policies:
                 print("Primeiro, você precisa criar um cliente e uma apólice.")
                 continue
-            cliente1.add_policy(apolice1)
+            customer_index = int(input("Digite o índice do cliente: "))
+            policy_index = int(input("Digite o índice da apólice: "))
+            if 0 <= customer_index < len(customers) and 0 <= policy_index < len(policies):
+                policies[policy_index].customer = customers[customer_index]
+                customers[customer_index].add_policy(policies[policy_index])
+                print("Apólice adicionada ao perfil do cliente.")
+            else:
+                print("Índice de cliente ou apólice inválido.")
         elif choice == '6':
-            if cliente1 is None:
+            if not customers:
                 print("Primeiro, você precisa criar um cliente.")
                 continue
-            print(cliente1.view_policy_info())
+            customer_index = int(input("Digite o índice do cliente que deseja visualizar as apólices: "))
+            if 0 <= customer_index < len(customers):
+                policies_info = customers[customer_index].view_policy_info()
+                print(policies_info)
+            else:
+                print("Índice de cliente inválido.")
         elif choice == '7':
-            if apolice1 is None:
+            if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            print(apolice1.view_policy_details())
+            policy_index = int(input("Digite o índice da apólice que deseja ver os detalhes: "))
+            if 0 <= policy_index < len(policies):
+                print(policies[policy_index].view_policy_details())
+            else:
+                print("Índice de apólice inválido.")
         elif choice == '8':
-            if apolice1 is None:
+            if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            new_amount = float(input("Digite a nova quantidade de cobertura: "))
-            apolice1.update_coverage_amount(new_amount)
+            policy_index = int(input("Digite o índice da apólice que deseja atualizar a quantidade de cobertura: "))
+            if 0 <= policy_index < len(policies):
+                new_amount = float(input("Digite a nova quantidade de cobertura: "))
+                policies[policy_index].update_coverage_amount(new_amount)
+                print("Quantidade de cobertura atualizada com sucesso.")
+            else:
+                print("Índice de apólice inválido.")
         elif choice == '9':
-            if apolice1 is None:
+            if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            description = input("Digite a descrição da reclamação: ")
-            reclamacao1 = Claim(policy=apolice1, description=description)
-            reclamacao1.process_claim()
+            policy_index = int(input("Digite o índice da apólice para registrar uma reclamação: "))
+            if 0 <= policy_index < len(policies):
+                description = input("Digite a descrição da reclamação: ")
+                claim = Claim(policy=policies[policy_index], description=description)
+                claim.process_claim()
+            else:
+                print("Índice de apólice inválido.")
         elif choice == '10':
-            if apolice1 is None:
+            if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            payment_amount = float(input("Digite o valor do pagamento: "))
-            apolice1.process_payment(payment_amount)
+            policy_index = int(input("Digite o índice da apólice para processar o pagamento: "))
+            if 0 <= policy_index < len(policies):
+                payment_amount = float(input("Digite o valor do pagamento: "))
+                policies[policy_index].process_payment(payment_amount)
+            else:
+                print("Índice de apólice inválido.")
         elif choice == '11':
-            if apolice1 is None:
+            if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            apolice1.send_payment_reminder()
+            policy_index = int(input("Digite o índice da apólice para enviar o lembrete de pagamento: "))
+            if 0 <= policy_index < len(policies):
+                policies[policy_index].send_payment_reminder()
+            else:
+                print("Índice de apólice inválido.")
         elif choice == '12':
             break
         else:
