@@ -1,11 +1,12 @@
 import datetime
 
 class Customer:
-    def __init__(self, name, email, personal_info=None):
+    def __init__(self, name, email, personal_info=None, documents=None):
         self.name = name
         self.email = email
         self.personal_info = personal_info if personal_info else {}
         self.policy_info = {}
+        self.documents = documents if documents else {}
 
     def update_personal_info(self, name, email):
         self.name = name
@@ -14,7 +15,8 @@ class Customer:
     def view_personal_info(self):
         return {
             'name': self.name,
-            'email': self.email
+            'email': self.email,
+            'documents': self.documents
         }
 
     def add_policy(self, policy):
@@ -24,6 +26,21 @@ class Customer:
         if not self.policy_info:
             return "Este cliente não tem apólices cadastradas."
         return self.policy_info
+        
+    def update_documents(self, cpf=None, rg=None, endereco=None):
+        if cpf:
+            self.documents['cpf'] = cpf
+        if rg:
+            self.documents['rg'] = rg
+        if endereco:
+            self.documents['endereco'] = endereco
+            
+    def view_personal_info(self):
+        return {
+            'name': self.name,
+            'email': self.email,
+            'documents': self.documents
+        }
 
 class Policy:
     def __init__(self, policy_number, customer, coverage_amount, premium):
@@ -252,6 +269,8 @@ def user_interface():
         print("15. Sair")
         print("16. Portal de Atendimento ao Cliente")
         print("17. Tratamento de Renovações e Cancelamentos")
+        print("18. Adicionar Documentos ao Cliente")
+        print("19. Visualizar Documentos do Cliente")
 
         choice = input("Escolha uma opção: ")
 
@@ -265,8 +284,8 @@ def user_interface():
             
             print("\nEscolha o cliente para atualizar informações pessoais:")
             for i, customer in enumerate(customers):
-                print(f"{i + 0}. {customer.name}")
-            customer_index = int(input("Digite o índice do cliente que deseja atualizar: "))
+                print(f"{i + 1}. {customer.name}")
+            customer_index = int(input("Digite o índice do cliente que deseja atualizar: ")) - 1
             if 0 <= customer_index < len(customers):
                 name = input("Digite o novo nome do cliente: ")
                 email = input("Digite o novo email do cliente: ")
@@ -281,8 +300,8 @@ def user_interface():
             
             print("\nEscolha o cliente para visualizar informações pessoais:")
             for i, customer in enumerate(customers):
-                print(f"{i + 0}. {customer.name}")
-            customer_index = int(input("Digite o índice do cliente que deseja visualizar: "))
+                print(f"{i + 1}. {customer.name}")
+            customer_index = int(input("Digite o índice do cliente que deseja visualizar: ")) - 1
             if 0 <= customer_index < len(customers):
                 print(f"Nome: {customers[customer_index].name}")
                 print(f"Email: {customers[customer_index].email}")
@@ -322,7 +341,7 @@ def user_interface():
             print("\nLista de Clientes:")
             for i, customer in enumerate(customers):
                 print(f"{i + 1}. {customer.name}")
-                customer_index = int(input("Digite o número do cliente que deseja visualizar as apólices: ")) - 1
+            customer_index = int(input("Digite o número do cliente que deseja visualizar as apólices: ")) - 1
             if 0 <= customer_index < len(customers):
                 policies_info = customers[customer_index].view_policy_info()
                 print(policies_info)
@@ -459,8 +478,42 @@ def user_interface():
                         policies[policy_index].cancelar_apolice()
                     else:
                         print("Opção inválida. Tente novamente.")
-                else:
-                    print("Índice de apólice inválido.")
+        elif choice == '18':
+            if not customers:
+                print("Primeiro, você precisa criar um cliente.")
+                continue
+            print("\nLista de Clientes:")
+            for i, customer in enumerate(customers):
+                print(f"{i + 1}. {customer.name}")
+                
+            customer_index = int(input("Digite o número do cliente para incluir os documentos: ")) - 1
+            
+            if 0 <= customer_index < len(customers):
+                cpf = input("Digite o CPF do cliente: ")
+                rg = input("Digite o RG do cliente: ")
+                endereco = input("Digite o endereço do cliente: ")
+                
+                customers[customer_index].update_documents(cpf=cpf, rg=rg, endereco=endereco)
+                print("Documentos do cliente incluso com sucesso.")
+            else:
+                print("Índice de cliente inválido.")
+                
+        elif choice == '19':
+            if not customers:
+                print("Primeiro, você precisa criar um cliente.")
+                continue
+            print("\nLista de Clientes:")
+            for i, customer in enumerate(customers):
+                print(f"{i + 1}. {customer.name}")
+            customer_index = int(input("Digite o número do cliente para visualizar os documentos: ")) - 1
+            
+            if 0 <= customer_index < len(customers):
+                documents = customers[customer_index].view_personal_info()['documents']
+                print(f"Documentos do Cliente {customers[customer_index].name}:")
+                for key, value in documents.items():
+                    print(f"{key.capitalize()}: {value}")
+            else:    
+                print("Índice de cliente inválido.")
             
 def authenticate_customer(customers, email):
     normalized_email = email.lower()  # Converte o e-mail para minúsculas
