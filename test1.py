@@ -68,7 +68,10 @@ class Policy:
 
     def avaliar_risco(self):
         fator_arbitrario = 0.1
-        self.risk_evaluation = self.coverage_amount * fator_arbitrario / self.premium
+        if self.premium != 0:
+            self.risk_evaluation = self.coverage_amount * fator_arbitrario / self.premium
+        else:
+            print("Prêmio é zero. Não é possível calcular a avaliação de risco.")
 
 class Claim:
     def __init__(self, policy, description):
@@ -101,7 +104,7 @@ class Report:
                 'description': claim.description,
                 'date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             })
-        print("Relatório de Sinistros gerado com sucesso.")
+        return self.claims_report
 
     def generate_payments_report(self, policies):
         for policy in policies:
@@ -112,7 +115,7 @@ class Report:
                     'amount_paid': policy.premium,
                     'date': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 })
-        print("Relatório de Pagamentos gerado com sucesso.")
+        return self.payments_report
 
     def generate_customers_statistics(self, customers):
         for customer in customers:
@@ -122,7 +125,7 @@ class Report:
                 'email': customer.email,
                 'policies_count': policies_count,
             })
-        print("Relatório de Estatísticas de Clientes gerado com sucesso.")
+        return self.customers_statistics
 
 class Agent:
     def __init__(self, name, email, assigned_customers=None):
@@ -183,11 +186,20 @@ def generate_reports(report, policies, claims, customers):
     report_choice = input("Digite o número correspondente à opção desejada: ")
 
     if report_choice == '1':
-        report.generate_claims_report(claims)
+        claims_report = report.generate_claims_report(claims)
+        print("Relatório de Sinistros:")
+        for claim in claims_report:
+            print(claim)
     elif report_choice == '2':
-        report.generate_payments_report(policies)
+        payments_report = report.generate_payments_report(policies)
+        print("Relatório de Pagamentos:")
+        for payment in payments_report:
+            print(payment)
     elif report_choice == '3':
-        report.generate_customers_statistics(customers)
+        customers_statistics = report.generate_customers_statistics(customers)
+        print("Relatório de Estatísticas de Clientes:")
+        for statistic in customers_statistics:
+            print(statistic)
     else:
         print("Opção inválida. Tente novamente.")
         
