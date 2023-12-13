@@ -105,6 +105,7 @@ class Policy:
         if not self.is_claimed:
             self.is_canceled = True
             print("Apólice cancelada com sucesso.")
+            self.customer.policy_info[self.policy_number]['status'] = "Cancelada"
         else:
             print("Não é possivel cancelar uma apólice após registro do sinistro")
             
