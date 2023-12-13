@@ -45,12 +45,14 @@ class Policy:
 
     def view_policy_details(self):
         customer_name = self.customer.name if self.customer else "Cliente não associado"
+        policy_status = "Cancelada" if self.is_canceled else "Ativa"
         return {
             'policy_number': self.policy_number,
             'customer': customer_name,
             'coverage_amount': self.coverage_amount,
             'premium': self.premium,
-            'is_claimed': self.is_claimed
+            'is_claimed': self.is_claimed,
+            'status': policy_status
         }
 
     def update_coverage_amount(self, new_amount):
@@ -75,9 +77,12 @@ class Policy:
             print("Prêmio é zero. Não é possível calcular a avaliação de risco.")
             
     def renovar_apolice(self):
+        if self.is_canceled:
+            print("Não é possível renovar uma apólice cancelada.")
+        else:
         # Lógica de renovação da apólice (por exemplo, estender a data de vencimento)
-        self.payment_due_date += datetime.timedelta(days=365)
-        print("Apólice renovada com sucesso.")
+            self.payment_due_date += datetime.timedelta(days=365)
+            print("Apólice renovada com sucesso.")
         
     def cancelar_apolice(self):
         if not self.is_claimed:
