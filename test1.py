@@ -278,8 +278,15 @@ def user_interface():
             if not customers or not policies:
                 print("Primeiro, você precisa criar um cliente e uma apólice.")
                 continue
-            customer_index = int(input("Digite o índice do cliente: "))
-            policy_index = int(input("Digite o índice da apólice: "))
+            print("\nLista de Clientes:")
+            for i, customer in enumerate(customers):
+                print(f"{i + 1}. {customer.name}")
+            customer_index = int(input("Digite o número do cliente: ")) - 1
+            print("\nLista de Apólices:")
+            for i, policy in enumerate(policies):
+                policy_details = policy.view_policy_details()
+                print(f"{i + 1}. Apólice {policy_details['policy_number']} - Cliente: {policy_details['customer']}, Cobertura: {policy_details['coverage_amount']}, Prêmio: {policy_details['premium']}")
+            policy_index = int(input("Digite o número da apólice: ")) - 1
             if 0 <= customer_index < len(customers) and 0 <= policy_index < len(policies):
                 policies[policy_index].customer = customers[customer_index]
                 customers[customer_index].add_policy(policies[policy_index])
@@ -290,7 +297,10 @@ def user_interface():
             if not customers:
                 print("Primeiro, você precisa criar um cliente.")
                 continue
-            customer_index = int(input("Digite o índice do cliente que deseja visualizar as apólices: "))
+            print("\nLista de Clientes:")
+            for i, customer in enumerate(customers):
+                print(f"{i + 1}. {customer.name}")
+                customer_index = int(input("Digite o número do cliente que deseja visualizar as apólices: ")) - 1
             if 0 <= customer_index < len(customers):
                 policies_info = customers[customer_index].view_policy_info()
                 print(policies_info)
@@ -300,7 +310,11 @@ def user_interface():
             if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            policy_index = int(input("Digite o índice da apólice que deseja ver os detalhes: "))
+            print("\nLista de Apólices:")
+            for i, policy in enumerate(policies):
+                policy_details = policy.view_policy_details()
+                print(f"{i + 1}. Apólice {policy_details['policy_number']} - Cliente: {policy_details['customer']}, Cobertura: {policy_details['coverage_amount']}, Prêmio: {policy_details['premium']}")
+            policy_index = int(input("Digite o número da apólice que deseja ver os detalhes: ")) - 1
             if 0 <= policy_index < len(policies):
                 policy_details = policies[policy_index].view_policy_details()
                 print(policy_details)
@@ -310,10 +324,20 @@ def user_interface():
             if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            policy_index = int(input("Digite o índice da apólice que deseja atualizar a quantidade de cobertura: "))
+            print("\nLista de Apólices:")
+            for i, policy in enumerate(policies):
+                policy_details = policy.view_policy_details()
+                print(f"{i + 1}. Apólice {policy_details['policy_number']} - Cliente: {policy_details['customer']}, Cobertura: {policy_details['coverage_amount']}, Prêmio: {policy_details['premium']}")
+            policy_index = int(input("Digite o índice da apólice que deseja atualizar a quantidade de cobertura: ")) - 1
             if 0 <= policy_index < len(policies):
+                print("Detalhes da Apólice antes da Atualização:")
+                policy_details_before = policies[policy_index].view_policy_details()
+                print(policy_details_before)
                 new_amount = float(input("Digite a nova quantidade de cobertura: "))
                 policies[policy_index].update_coverage_amount(new_amount)
+                print("Detalhes da Apólice após a Atualização:")
+                policy_details_after = policies[policy_index].view_policy_details()
+                print(policy_details_after)
                 print("Quantidade de cobertura atualizada com sucesso.")
             else:
                 print("Índice de apólice inválido.")
@@ -321,7 +345,11 @@ def user_interface():
             if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            policy_index = int(input("Digite o índice da apólice para registrar uma reclamação: "))
+            print("\nLista de Apólices:")
+            for i, policy in enumerate(policies):
+                policy_details = policy.view_policy_details()
+                print(f"{i + 1}. Apólice {policy_details['policy_number']} - Cliente: {policy_details['customer']}, Cobertura: {policy_details['coverage_amount']}, Prêmio: {policy_details['premium']}")
+            policy_index = int(input("Digite o índice da apólice para registrar uma reclamação: ")) - 1
             if 0 <= policy_index < len(policies):
                 description = input("Digite a descrição da reclamação: ")
                 claim = Claim(policy=policies[policy_index], description=description)
@@ -333,7 +361,11 @@ def user_interface():
             if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            policy_index = int(input("Digite o índice da apólice para processar o pagamento: "))
+            print("\nLista de Apólices:")
+            for i, policy in enumerate(policies):
+                policy_details = policy.view_policy_details()
+                print(f"{i + 1}. Apólice {policy_details['policy_number']} - Cliente: {policy_details['customer']}, Cobertura: {policy_details['coverage_amount']}, Prêmio: {policy_details['premium']}")
+            policy_index = int(input("Digite o índice da apólice para processar o pagamento: ")) - 1
             if 0 <= policy_index < len(policies):
                 payment_amount = float(input("Digite o valor do pagamento: "))
                 policies[policy_index].process_payment(payment_amount)
@@ -343,7 +375,11 @@ def user_interface():
             if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            policy_index = int(input("Digite o índice da apólice para enviar o lembrete de pagamento: "))
+            print("\nLista de Apólices:")
+            for i, policy in enumerate(policies):
+                policy_details = policy.view_policy_details()
+                print(f"{i + 1}. Apólice {policy_details['policy_number']} - Cliente: {policy_details['customer']}, Cobertura: {policy_details['coverage_amount']}, Prêmio: {policy_details['premium']}")
+            policy_index = int(input("Digite o índice da apólice para enviar o lembrete de pagamento: ")) - 1
             if 0 <= policy_index < len(policies):
                 policies[policy_index].send_payment_reminder()
             else:
@@ -352,7 +388,11 @@ def user_interface():
             if not policies:
                 print("Primeiro, você precisa criar uma apólice.")
                 continue
-            policy_index = int(input("Digite o índice da apólice para visualizar a avaliação de risco: "))
+            print("\nLista de Apólices:")
+            for i, policy in enumerate(policies):
+                policy_details = policy.view_policy_details()
+                print(f"{i + 1}. Apólice {policy_details['policy_number']} - Cliente: {policy_details['customer']}, Cobertura: {policy_details['coverage_amount']}, Prêmio: {policy_details['premium']}")
+            policy_index = int(input("Digite o índice da apólice para visualizar a avaliação de risco: ")) - 1
             if 0 <= policy_index < len(risk_evaluations):
                 if risk_evaluations[policy_index] is None:
                     policies[policy_index].avaliar_risco()
