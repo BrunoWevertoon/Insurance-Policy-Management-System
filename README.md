@@ -2,35 +2,38 @@
 
 ## Funcionalidades Implementadas
 
-1. **Criação e Gerenciamento de Apólices:**
+1. **Gestão de cliente.**
+   - Criar perfis de cliente com nome, e-mail.
+
+2. **Criação e Gerenciamento de Apólices:**
    - Os usuários podem criar, visualizar e gerenciar vários tipos de apólices de seguro.
 
-2. **Processamento de Sinistros:**
+3. **Processamento de Sinistros:**
    - Registro e processamento automático de reclamações de sinistros.
    - Aprovação automática de sinistros com verificações de validação.
 
-3. **Portal de Atendimento ao Cliente:**
+4. **Portal de Atendimento ao Cliente:**
    - Portal dedicado para os clientes visualizarem suas apólices e reclamações.
 
-4. **Processamento de Pagamentos:**
+5. **Processamento de Pagamentos:**
    - Processar pagamentos de prêmios.
    - Enviar lembretes de pagamento para pagamentos em atraso.
 
-5. **Avaliação de Risco Automatizada:**
+6. **Avaliação de Risco Automatizada:**
    - Avaliar automaticamente o risco com base nos dados do cliente e no tipo de apólice.
 
-6. **Geração de Relatórios:**
+7. **Geração de Relatórios:**
    - Gerar relatórios de sinistros, pagamentos e estatísticas de clientes.
 
-7. **Gestão de Agentes:**
+8. **Gestão de Agentes:**
    - Criar perfis de agentes com nome, e-mail e clientes atribuídos.
    - Atribuir clientes a agentes para uma melhor gestão.
 
-8. **Renovação e Cancelamento de Apólices:**
+9. **Renovação e Cancelamento de Apólices:**
    - Renovar apólices automaticamente, estendendo a data de vencimento.
    - Cancelar apólices, com validações e atualizações correspondentes.
 
-9. **Gestão de Documentos:**
+10. **Gestão de Documentos:**
    - Adicionar documentos aos perfis dos clientes de forma segura.
 
 ## Como Usar
