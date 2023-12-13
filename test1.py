@@ -32,6 +32,7 @@ class Policy:
         self.coverage_amount = coverage_amount
         self.premium = premium
         self.is_claimed = False
+        self.is_canceled = False
         self.payment_due_date = datetime.datetime.now() + datetime.timedelta(days=30)
         self.risk_evaluation = None
 
@@ -72,6 +73,19 @@ class Policy:
             self.risk_evaluation = self.coverage_amount * fator_arbitrario / self.premium
         else:
             print("Prêmio é zero. Não é possível calcular a avaliação de risco.")
+            
+    def renovar_apolice(self):
+        # Lógica de renovação da apólice (por exemplo, estender a data de vencimento)
+        self.payment_due_date += datetime.timedelta(days=365)
+        print("Apólice renovada com sucesso.")
+        
+    def cancelar_apolice(self):
+        if not self.is_claimed:
+            self.is_canceled = True
+            print("Apólice cancelada com sucesso.")
+       else:
+           print("Não é possível cancelar uma apólice após o registro de sinistros.")
+        
 
 class Claim:
     def __init__(self, policy, description):
@@ -229,7 +243,8 @@ def user_interface():
         print("13. Gerar Relatórios")
         print("14. Gerenciar Agentes")
         print("15. Sair")
-        print("16. Portal de Atendimento ao Cliente")  
+        print("16. Portal de Atendimento ao Cliente")
+        print("17. Tratamento de Renovações e Cancelamentos")
 
         choice = input("Escolha uma opção: ")
 
@@ -417,8 +432,28 @@ def user_interface():
                 customer_portal(authenticated_customer, policies, claims)
             else:
                 print("E-mail não encontrado. Verifique seu e-mail e tente novamente.")
-        else:
-            print("Opção inválida. Tente novamente.")
+        elif choice == '17':
+            if not policies:
+                print("Primeiro, você precisa criar uma apólice.")
+                continue
+            print("\nLista de Apólices:")
+            for i, policy in enumerate(policies):
+                policy_details = policy.view_policy_details()
+                print(f"{i + 1}. Apólice {policy_details['policy_number']} - Cliente: {policy_details['customer']}, Cobertura: {policy_details['coverage_amount']}, Prêmio: {policy_details['premium']}")
+                policy_index = int(input("Digite o índice da apólice para tratamento de renovações e cancelamentos: ")) - 1
+                if 0 <= policy_index < len(policies):
+                    print("\nOpções:")
+                    print("1. Renovar Apólice")
+                    print("2. Cancelar Apólice")
+                    option = input("Digite o número correspondente à opção desejada: ")
+                    if option == '1':
+                        policies[policy_index].renovar_apolice()
+                    elif option == '2':
+                        policies[policy_index].cancelar_apolice()
+                    else:
+                        print("Opção inválida. Tente novamente.")
+                else:
+                    print("Índice de apólice inválido.")
             
 def authenticate_customer(customers, email):
     normalized_email = email.lower()  # Converte o e-mail para minúsculas
