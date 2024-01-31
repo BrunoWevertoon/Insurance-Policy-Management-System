@@ -1,5 +1,9 @@
 Este código implementa um sistema simples de gerenciamento de apólices de seguro utilizando Programação Orientada a Objetos (OOP) em Python. Vamos analisar as classes e suas funcionalidades:
 
+Uma apólice de seguro é um contrato entre uma seguradora (ou segurador) e um segurado (ou tomador do seguro). Esse contrato estabelece os termos e condições em que a seguradora concorda em fornecer cobertura financeira ou benefícios ao segurado em troca do pagamento de um prêmio.
+
+
+
 1. **Customer (Cliente):**
    - A classe representa um cliente com atributos como nome, email, informações pessoais (opcional) e documentos.
    - Métodos:
