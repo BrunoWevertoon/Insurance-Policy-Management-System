@@ -1,0 +1,55 @@
+Este código implementa um sistema simples de gerenciamento de apólices de seguro utilizando Programação Orientada a Objetos (OOP) em Python. Vamos analisar as classes e suas funcionalidades:
+
+1. **Customer (Cliente):**
+   - A classe representa um cliente com atributos como nome, email, informações pessoais (opcional) e documentos.
+   - Métodos:
+     - `__init__`: Inicializa um objeto cliente.
+     - `update_personal_info`: Atualiza as informações pessoais do cliente.
+     - `view_personal_info`: Retorna um dicionário com informações pessoais e documentos.
+     - `add_policy`: Adiciona uma apólice ao cliente.
+     - `view_policy_info`: Retorna as informações das apólices associadas ao cliente.
+     - `update_documents`: Atualiza documentos do cliente.
+
+2. **Policy (Apólice):**
+   - Representa uma apólice de seguro com atributos como número da apólice, cliente associado, valor da cobertura, prêmio, entre outros.
+   - Métodos:
+     - `__init__`: Inicializa um objeto apólice.
+     - `file_claim`: Registra um sinistro para a apólice.
+     - `create_policy`: Método de classe para criar uma nova apólice.
+     - `view_policy_details`: Retorna os detalhes da apólice.
+     - `update_coverage_amount`: Atualiza o valor da cobertura da apólice.
+     - `process_payment`: Processa um pagamento para a apólice.
+     - `send_payment_reminder`: Envia um lembrete de pagamento, se necessário.
+     - `avaliar_risco`: Avalia o risco da apólice.
+     - `renovar_apolice`: Renova a apólice.
+     - `cancelar_apolice`: Cancela a apólice.
+
+3. **Claim (Reclamação/Sinistro):**
+   - Representa um sinistro relacionado a uma apólice.
+   - Métodos:
+     - `__init__`: Inicializa um objeto de reclamação.
+     - `approve_claim`: Aprova a reclamação.
+     - `process_claim`: Processa a reclamação e a aprova.
+
+4. **Report (Relatório):**
+   - Classe responsável por gerar relatórios relacionados a sinistros, pagamentos e estatísticas de clientes.
+   - Métodos:
+     - `generate_claims_report`: Gera um relatório de sinistros.
+     - `generate_payments_report`: Gera um relatório de pagamentos.
+     - `generate_customers_statistics`: Gera estatísticas de clientes.
+
+5. **Agent (Agente):**
+   - Representa um agente associado ao sistema.
+   - Métodos:
+     - `__init__`: Inicializa um objeto agente.
+     - `assign_customer`: Atribui um cliente ao agente.
+     - `view_assigned_customers`: Retorna os clientes atribuídos ao agente.
+
+6. **Funções Adicionais:**
+   - `create_customer`: Solicita informações do usuário para criar um novo cliente.
+   - `create_agent`: Solicita informações do usuário para criar um novo agente.
+   - `assign_customer_to_agent`: Atribui um cliente a um agente.
+   - `generate_reports`: Gera relatórios com base nas opções escolhidas pelo usuário.
+   - `user_interface`: Implementa a interface do usuário para interagir com o sistema.
+
+O código segue os princípios da Programação Orientada a Objetos, encapsulando dados e comportamentos em classes, facilitando a manutenção e expansão do sistema. Cada classe representa uma entidade específica no domínio do seguro e possui métodos para realizar ações relacionadas a essa entidade.
