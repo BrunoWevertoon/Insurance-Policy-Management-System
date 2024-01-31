@@ -1,5 +1,6 @@
 import datetime
 
+# Classe base para representar uma pessoa
 class Person:
     def __init__(self, name, email):
         self.name = name
@@ -8,7 +9,7 @@ class Person:
     def __str__(self):
         return f"{self.__class__.__name__}: {self.name}, Email: {self.email}"
 
-
+# Classe que herda de Person, representando um cliente
 class Customer(Person):
     def __init__(self, name, email, personal_info=None, documents=None):
         super().__init__(name, email)
@@ -46,7 +47,7 @@ class Customer(Person):
     def __str__(self):
         return super().__str__() + f", Policies: {len(self.policy_info)}"
 
-
+# Classe que herda de Person, representando um agente
 class Agent(Person):
     def __init__(self, name, email, assigned_customers=None):
         super().__init__(name, email)
@@ -61,7 +62,7 @@ class Agent(Person):
     def __str__(self):
         return super().__str__() + f", Assigned Customers: {len(self.assigned_customers)}"
 
-
+# Classe que representa uma apólice
 class Policy:
     def __init__(self, policy_number, customer, coverage_amount, premium):
         self.policy_number = policy_number
@@ -128,6 +129,7 @@ class Policy:
             self.customer.policy_info[self.policy_number]['status'] = "Cancelada"
         else:
             print("Não é possivel cancelar uma apólice após registro do sinistro")
+# Classe que representa uma reclamação
 class Claim:
     def __init__(self, policy, description):
         self.policy = policy
@@ -145,7 +147,7 @@ class Claim:
         self.approve_claim()
         print("Sinistro processado e aprovado.")
 
-
+# Classe que representa um relatório
 class Report:
     def __init__(self):
         self.claims_report = []
@@ -182,10 +184,11 @@ class Report:
                 'policies_count': policies_count,
             })
         return self.customers_statistics
+# Classe de exceção personalizada
 class InsuranceError(Exception):
     pass
 
-
+# Função para criar um cliente com tratamento de exceções
 def create_customer():
     try:
         name = input("Digite o nome do cliente: ")
@@ -194,7 +197,7 @@ def create_customer():
     except Exception as e:
         raise InsuranceError(f"Erro ao criar cliente: {e}")
 
-
+# Função para criar um agente com tratamento de exceções
 def create_agent():
     try:
         name = input("Digite o nome do agente: ")
