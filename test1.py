@@ -1,9 +1,17 @@
 import datetime
 
-class Customer:
-    def __init__(self, name, email, personal_info=None, documents=None):
+class Person:
+    def __init__(self, name, email):
         self.name = name
         self.email = email
+
+    def __str__(self):
+        return f"{self.__class__.__name__}: {self.name}, Email: {self.email}"
+
+
+class Customer(Person):
+    def __init__(self, name, email, personal_info=None, documents=None):
+        super().__init__(name, email)
         self.personal_info = personal_info if personal_info else {}
         self.policy_info = {}
         self.documents = documents if documents else {}
@@ -26,7 +34,7 @@ class Customer:
         if not self.policy_info:
             return "Este cliente não tem apólices cadastradas."
         return self.policy_info
-        
+
     def update_documents(self, cpf=None, rg=None, endereco=None):
         if cpf:
             self.documents['cpf'] = cpf
@@ -34,13 +42,25 @@ class Customer:
             self.documents['rg'] = rg
         if endereco:
             self.documents['endereco'] = endereco
-            
-    def view_personal_info(self):
-        return {
-            'name': self.name,
-            'email': self.email,
-            'documents': self.documents
-        }
+
+    def __str__(self):
+        return super().__str__() + f", Policies: {len(self.policy_info)}"
+
+
+class Agent(Person):
+    def __init__(self, name, email, assigned_customers=None):
+        super().__init__(name, email)
+        self.assigned_customers = assigned_customers if assigned_customers else []
+
+    def assign_customer(self, customer):
+        self.assigned_customers.append(customer)
+
+    def view_assigned_customers(self):
+        return [customer.view_personal_info() for customer in self.assigned_customers]
+
+    def __str__(self):
+        return super().__str__() + f", Assigned Customers: {len(self.assigned_customers)}"
+
 
 class Policy:
     def __init__(self, policy_number, customer, coverage_amount, premium):
@@ -108,10 +128,6 @@ class Policy:
             self.customer.policy_info[self.policy_number]['status'] = "Cancelada"
         else:
             print("Não é possivel cancelar uma apólice após registro do sinistro")
-            
-            
-        
-
 class Claim:
     def __init__(self, policy, description):
         self.policy = policy
@@ -128,6 +144,7 @@ class Claim:
         self.policy.file_claim()
         self.approve_claim()
         print("Sinistro processado e aprovado.")
+
 
 class Report:
     def __init__(self):
@@ -165,83 +182,86 @@ class Report:
                 'policies_count': policies_count,
             })
         return self.customers_statistics
+class InsuranceError(Exception):
+    pass
 
-class Agent:
-    def __init__(self, name, email, assigned_customers=None):
-        self.name = name
-        self.email = email
-        self.assigned_customers = assigned_customers if assigned_customers else []
-
-    def assign_customer(self, customer):
-        self.assigned_customers.append(customer)
-
-    def view_assigned_customers(self):
-        return [customer.view_personal_info() for customer in self.assigned_customers]
 
 def create_customer():
-    name = input("Digite o nome do cliente: ")
-    email = input("Digite o email do cliente: ")
-    return Customer(name=name, email=email)
+    try:
+        name = input("Digite o nome do cliente: ")
+        email = input("Digite o email do cliente: ")
+        return Customer(name=name, email=email)
+    except Exception as e:
+        raise InsuranceError(f"Erro ao criar cliente: {e}")
+
 
 def create_agent():
-    name = input("Digite o nome do agente: ")
-    email = input("Digite o email do agente: ")
-    return Agent(name=name, email=email)
+    try:
+        name = input("Digite o nome do agente: ")
+        email = input("Digite o email do agente: ")
+        return Agent(name=name, email=email)
+    except Exception as e:
+        raise InsuranceError(f"Erro ao criar agente: {e}")
+
 
 def assign_customer_to_agent(agents, customers):
-    if not agents:
-        print("Não há agentes disponíveis. Por favor, crie um agente primeiro.")
-        return
-    if not customers:
-        print("Não há clientes disponíveis. Por favor, crie um cliente primeiro.")
-        return
+    try:
+        if not agents:
+            raise InsuranceError("Não há agentes disponíveis. Por favor, crie um agente primeiro.")
+        if not customers:
+            raise InsuranceError("Não há clientes disponíveis. Por favor, crie um cliente primeiro.")
 
-    print("\nEscolha um agente para atribuir ao cliente:")
-    for i, agent in enumerate(agents):
-        print(f"{i + 1}. {agent.name}")
+        print("\nEscolha um agente para atribuir ao cliente:")
+        for i, agent in enumerate(agents):
+            print(f"{i + 1}. {agent.name}")
 
-    agent_index = int(input("Digite o número correspondente ao agente desejado: ")) - 1
+        agent_index = int(input("Digite o número correspondente ao agente desejado: ")) - 1
 
-    if 0 <= agent_index < len(agents):
-        print("\nEscolha um cliente para atribuir ao agente:")
-        for i, customer in enumerate(customers):
-            print(f"{i + 1}. {customer.name}")
+        if 0 <= agent_index < len(agents):
+            print("\nEscolha um cliente para atribuir ao agente:")
+            for i, customer in enumerate(customers):
+                print(f"{i + 1}. {customer.name}")
 
-        customer_index = int(input("Digite o número correspondente ao cliente desejado: ")) - 1
+            customer_index = int(input("Digite o número correspondente ao cliente desejado: ")) - 1
 
-        if 0 <= customer_index < len(customers):
-            agents[agent_index].assign_customer(customers[customer_index])
-            print(f"Cliente {customers[customer_index].name} atribuído ao agente {agents[agent_index].name}.")
+            if 0 <= customer_index < len(customers):
+                agents[agent_index].assign_customer(customers[customer_index])
+                print(f"Cliente {customers[customer_index].name} atribuído ao agente {agents[agent_index].name}.")
+            else:
+                raise InsuranceError("Índice de cliente inválido.")
         else:
-            print("Índice de cliente inválido.")
-    else:
-        print("Índice de agente inválido.")
+            raise InsuranceError("Índice de agente inválido.")
+    except InsuranceError as e:
+        print(e)
+
 
 def generate_reports(report, policies, claims, customers):
-    print("\nEscolha o tipo de relatório:")
-    print("1. Relatório de Sinistros")
-    print("2. Relatório de Pagamentos")
-    print("3. Estatísticas de Clientes")
-    report_choice = input("Digite o número correspondente à opção desejada: ")
+    try:
+        print("\nEscolha o tipo de relatório:")
+        print("1. Relatório de Sinistros")
+        print("2. Relatório de Pagamentos")
+        print("3. Estatísticas de Clientes")
+        report_choice = input("Digite o número correspondente à opção desejada: ")
 
-    if report_choice == '1':
-        claims_report = report.generate_claims_report(claims)
-        print("Relatório de Sinistros:")
-        for claim in claims_report:
-            print(claim)
-    elif report_choice == '2':
-        payments_report = report.generate_payments_report(policies)
-        print("Relatório de Pagamentos:")
-        for payment in payments_report:
-            print(payment)
-    elif report_choice == '3':
-        customers_statistics = report.generate_customers_statistics(customers)
-        print("Relatório de Estatísticas de Clientes:")
-        for statistic in customers_statistics:
-            print(statistic)
-    else:
-        print("Opção inválida. Tente novamente.")
-        
+        if report_choice == '1':
+            claims_report = report.generate_claims_report(claims)
+            print("Relatório de Sinistros:")
+            for claim in claims_report:
+                print(claim)
+        elif report_choice == '2':
+            payments_report = report.generate_payments_report(policies)
+            print("Relatório de Pagamentos:")
+            for payment in payments_report:
+                print(payment)
+        elif report_choice == '3':
+            customers_statistics = report.generate_customers_statistics(customers)
+            print("Relatório de Estatísticas de Clientes:")
+            for statistic in customers_statistics:
+                print(statistic)
+        else:
+            raise InsuranceError("Opção inválida. Tente novamente.")
+    except InsuranceError as e:
+        print(e)
 
 
 def user_interface():
