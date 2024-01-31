@@ -17,11 +17,11 @@ class Customer(Person):
         self.policy_info = {}
         self.documents = documents if documents else {}
 
-    def update_personal_info(self, name, email):
+    def update_personal_info(self, name, email): # O método update_personal_info fornece uma maneira controlada de atualizar os atributos name e email de um cliente. Isso ajuda a garantir que as atualizações ocorram de acordo com a lógica definida na classe.
         self.name = name
         self.email = email
 
-    def view_personal_info(self):
+    def view_personal_info(self): #O método view_personal_info fornece uma maneira controlada de acessar informações sobre um cliente, encapsulando a estrutura interna da classe.
         return {
             'name': self.name,
             'email': self.email,
@@ -62,8 +62,8 @@ class Agent(Person):
     def __str__(self):
         return super().__str__() + f", Assigned Customers: {len(self.assigned_customers)}"
 
-# Classe que representa uma apólice
-class Policy:
+# Classe que representa uma apólice, 
+class Policy: # Os atributos como is_claimed, is_canceled, payment_due_date, e risk_evaluation são acessados e modificados apenas por métodos internos à classe Policy. Isso encapsula esses detalhes de implementação e ajuda a evitar alterações não autorizadas.
     def __init__(self, policy_number, customer, coverage_amount, premium):
         self.policy_number = policy_number
         self.customer = customer
@@ -78,7 +78,7 @@ class Policy:
         self.is_claimed = True
 
     @classmethod
-    def create_policy(cls, policy_number, customer, coverage_amount, premium):
+    def create_policy(cls, policy_number, customer, coverage_amount, premium): #O método de classe create_policy é polimórfico, pois pode criar objetos Policy com diferentes tipos de argumentos, dependendo do contexto em que é chamado.
         return cls(policy_number, customer, coverage_amount, premium)
 
     def view_policy_details(self):
@@ -148,7 +148,7 @@ class Claim:
         print("Sinistro processado e aprovado.")
 
 # Classe que representa um relatório
-class Report:
+class Report: #generate_claims_report, generate_payments_report, e generate_customers_statistics, Esses métodos são polimórficos, pois podem aceitar listas de objetos de diferentes tipos (claims, policies, customers) e gerar relatórios com base nessas entradas variáveis.
     def __init__(self):
         self.claims_report = []
         self.payments_report = []
@@ -238,7 +238,7 @@ def assign_customer_to_agent(agents, customers):
         print(e)
 
 
-def generate_reports(report, policies, claims, customers):
+def generate_reports(report, policies, claims, customers): #O método generate_reports aceita diferentes tipos de argumentos (policies, claims, customers) e gera relatórios com base nesses argumentos. O polimorfismo aqui está na capacidade desse método de operar com diferentes tipos de objetos de forma consistente.
     try:
         print("\nEscolha o tipo de relatório:")
         print("1. Relatório de Sinistros")
